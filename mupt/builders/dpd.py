@@ -44,7 +44,7 @@ def check_inter_particle_distance(snap,minimum_distance=0.95):
     else:
         return False
 
-def create_polymer_system_dpd(num_pol,num_mon,density,k=20000,bond_l=1.0,r_cut=1.15,kT=1.0,A=1000,gamma=800,dt=0.001,particle_spacing=1.1):
+def create_polymer_system_dpd(num_pol,num_mon,density,positions,k=20000,bond_l=1.0,r_cut=1.15,kT=1.0,A=1000,gamma=800,dt=0.001,particle_spacing=1.1):
     
     '''
     Initialize a polymer system in a cubic box using a random walk and a HOOMD simulation with DPD forces.
@@ -83,16 +83,13 @@ def create_polymer_system_dpd(num_pol,num_mon,density,k=20000,bond_l=1.0,r_cut=1
         returns list of particle positions
         
     '''
-    print(num_pol*num_mon)
-    print(f"\nRunning with A={A}, gamma={gamma}, k={k}, "
+    print(f"\nRunning DPD simulation with A={A}, gamma={gamma}, k={k}, "
           f"num_pol={num_pol}, num_mon={num_mon}")
-    start_time = time.perf_counter()
-    positions = rand_walk(num_mon=num_mon,num_pol=num_pol,bond_length=bond_l,density=density)
     N = num_pol * num_mon
     L = np.cbrt(N / density)  # Calculate box size based on density
     positions = pbc(positions,[L,L,L])
     bonds = []
-    for i in range(num_pol):
+    for i in range(num_+pol):
         start = i * num_mon
         for j in range(num_mon - 1):
             bonds.append([start + j, start + j + 1])
@@ -105,8 +102,6 @@ def create_polymer_system_dpd(num_pol,num_mon,density,k=20000,bond_l=1.0,r_cut=1
     frame.bonds.group = bonds
     frame.bonds.types = ['b']
     frame.configuration.box = [L, L, L, 0, 0, 0]
-    build_stop = time.perf_counter()
-    print("Total build time: ", build_stop-start_time)
     harmonic = hoomd.md.bond.Harmonic()
     harmonic.params["b"] = dict(r0=bond_l, k=k)
     integrator = hoomd.md.Integrator(dt=dt)
@@ -126,22 +121,16 @@ def create_polymer_system_dpd(num_pol,num_mon,density,k=20000,bond_l=1.0,r_cut=1
     simulation.run(1000)
     snap=simulation.state.get_snapshot()
     N = num_pol*num_mon
-    time_factor = N/90000
-    
-    while not check_bond_length_equilibration(snap,num_mon, num_pol,max_bond_length=particle_spacing): 
-        check_time = time.perf_counter()
-        if (check_time-start_time) > 60*time_factor:
-            return num_pol*num_mon, 0
-        simulation.run(1000)
-        snap=simulation.state.get_snapshot()
-
+    time_factor = N/9000
+    start_time = time.perf_counter()
+ 
     while not check_inter_particle_distance(snap,minimum_distance=0.95):
         check_time = time.perf_counter()
         if (check_time-start_time) > 60*time_factor:
-            return num_pol*num_mon, 0
+            return
         simulation.run(1000)
         snap=simulation.state.get_snapshot()
         
     end_time = time.perf_counter()
-    print("Total build and simulation time:", end_time - start_time)
+    print("Total DPD simulation time:", end_time - start_time)
     return snap.particles.position
