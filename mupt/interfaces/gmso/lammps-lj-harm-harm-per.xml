@@ -1,0 +1,52 @@
+<ForceField version="0.0.1" name="LAMMPS-BeadSpring">
+    <FFMetaData combiningRule="lorentz">
+        <Units energy="kJ/mol" distance="nm" mass="amu" charge="coulomb"/>
+    </FFMetaData>
+    <AtomTypes>
+       <AtomType name="A" element="A" atomclass="A" mass="1.0" charge="0.0" definition="A" description="CG Bead">
+       </AtomType>
+    </AtomTypes>
+    <BondTypes expression="k * (r-r0)**2">
+        <ParametersUnitDef parameter="r0" unit="nm"/>
+        <ParametersUnitDef parameter="k" unit="kJ/mol*nm**2"/>
+        <BondType name="Harmonic(A-A)" type1='A' type2='A'>
+            <Parameters>
+                <Parameter name="r0" value="1.0"/>
+                <Parameter name="k" value="5"/>
+            </Parameters>
+        </BondType>
+    </BondTypes>
+    <AngleTypes expression="k * (t-t0)**2">
+        <ParametersUnitDef parameter="t0" unit="radians"/>
+        <ParametersUnitDef parameter="k" unit="kJ/mol*radians**2"/>
+        <AngleType name="Harmonic(A-A-A)" type1="A" type2="A" type3="A">
+            <Parameters>
+                <Parameter name="t0" value="1.0"/>
+                <Parameter name="k" value="5"/>
+            </Parameters>
+        </AngleType>
+    </AngleTypes>
+    <DihedralTypes expression="k * (1 + d * cos(n*phi)">
+        <ParametersUnitDef parameter="k" unit="kJ/mol*radians**2"/>
+        <ParametersUnitDef parameter="d"/>
+        <ParametersUnitDef parameter="n"/>
+        <DihedralType name="Harmonic(A-A-A-A)" type1="A" type2="A" type3="A" type4="A">
+            <Parameters>
+                <Parameter name="k" value="5"/>
+                <Parameter name="d" value="-1"/>
+                <Parameter name="n" value="3"/>
+            </Parameters>
+        </DihedralType>
+    </DihedralTypes>
+
+  <PairPotentialTypes expression="4 * epsilon * ((sigma/r)**12 - (sigma/r)**6)">
+    <ParametersUnitDef parameter="sigma" unit="nm"/>
+    <ParametersUnitDef parameter="epsilon" unit="kJ/mol"/>
+    <PairPotentialType name="LJ(A:A)" type1="A" type2="A">
+        <Parameters>
+            <Parameter name="epsilon" value="1.0"/>
+            <Parameter name="sigma" value="1.0"/>
+        </Parameters>
+    </PairPotentialType>
+  </PairPotentialTypes>
+</ForceField>
