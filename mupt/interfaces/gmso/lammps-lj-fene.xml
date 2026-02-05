@@ -11,7 +11,7 @@
         <ParametersUnitDef parameter="K" unit="kJ/mol*nm**2"/>
         <ParametersUnitDef parameter="sigma" unit="nm"/>
         <ParametersUnitDef parameter="epsilon" unit="kJ/mol"/>
-        <BondType name="FENE(A-A)" type1='A' type2='A'>
+        <BondType name="LAMMPSFENEBondPotential" type1="A" type2="A">
             <Parameters>
                 <Parameter name='R0' value="1.0"/>
                 <Parameter name='K' value="10"/>
@@ -23,7 +23,7 @@
   <PairPotentialTypes expression="4 * epsilon * ((sigma/r)**12 - (sigma/r)**6)">
     <ParametersUnitDef parameter="sigma" unit="nm"/>
     <ParametersUnitDef parameter="epsilon" unit="kJ/mol"/>
-    <PairPotentialType name="LJ(A:A)" type1="A" type2="A">
+    <PairPotentialType name="LennardJonesPotential" type1="A" type2="A">
         <Parameters>
             <Parameter name="epsilon" value="1.0"/>
             <Parameter name="sigma" value="1.0"/>
