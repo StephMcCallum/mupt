@@ -31,7 +31,7 @@
         <ParametersUnitDef parameter="k" unit="kJ/mol*radians**2"/>
         <ParametersUnitDef parameter="d"/>
         <ParametersUnitDef parameter="n"/>
-        <DihedralType name="HOOMDPeriodicImproperPotential" type1="A" type2="A" type3="A" type4="A">
+        <DihedralType name="HOOMDPeriodicDihedralPotential" type1="A" type2="A" type3="A" type4="A">
             <Parameters>
                 <Parameter name="phi_eq" value="0"/>
                 <Parameter name="k" value="10"/>
