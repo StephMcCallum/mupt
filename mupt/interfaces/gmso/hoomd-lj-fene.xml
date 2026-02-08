@@ -8,7 +8,7 @@
     </AtomTypes>
     <BondTypes expression="-0.5 * K * R0**2 * log(1-((r-delta)/R0)**2) + 4 * epsilon * ((sigma/(r-delta))**12 - (sigma/(r-delta))**6) + epsilon">
         <ParametersUnitDef parameter="R0" unit="nm"/>
-        <ParametersUnitDef parameter="K" unit="kJ/mol*nm**2"/>
+        <ParametersUnitDef parameter="K" unit="kJ/mol/nm**2"/>
         <ParametersUnitDef parameter="sigma" unit="nm"/>
         <ParametersUnitDef parameter="epsilon" unit="kJ/mol"/>
         <ParametersUnitDef parameter="delta" unit="nm"/>
