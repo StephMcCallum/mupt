@@ -26,8 +26,8 @@
             </Parameters>
         </AngleType>
     </AngleTypes>
-    <DihedralTypes expression="k * (1 + d * cos(n*phi)">
-        <ParametersUnitDef parameter="k" unit="kJ/mol*radians**2"/>
+    <DihedralTypes expression="k * (1 + d * cos(n*phi))">
+        <ParametersUnitDef parameter="k" unit="kJ/mol"/>
         <ParametersUnitDef parameter="d"/>
         <ParametersUnitDef parameter="n"/>
         <DihedralType name="LAMMPSHarmonicDihedralPotential" type1="A" type2="A" type3="A" type4="A">
