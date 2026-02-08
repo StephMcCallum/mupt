@@ -18,6 +18,7 @@
                 <Parameter name='K' value="10"/>
                 <Parameter name='sigma' value="1.0"/>
                 <Parameter name='epsilon' value="1.0"/>
+                <Parameter name='delta' value="0.0"/>
             </Parameters>
         </BondType>
     </BondTypes>
