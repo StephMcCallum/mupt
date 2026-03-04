@@ -76,7 +76,7 @@ def sequence_repeat_units(
     yield tail_name
 
 
-def build_lexicon(
+def build_SAAMR_lexicon(
     rep_unit_smiles: dict[str, str],
     axis: int = 0,
 ) -> dict[str, Primitive]:
@@ -141,7 +141,7 @@ def build_lexicon(
     return lexicon
 
 
-def build_polymer_system(
+def build_SAAMR_polymer_system(
     rep_unit_smiles: dict[str, str],
     mid_distrib: dict[str, float],
     n_chains: int,
@@ -210,7 +210,7 @@ def build_polymer_system(
     ...     'tail': '*-[O:1]c1ccc(cc1)S(=O)(=O)c1ccc(cc1)[O:2]-[H]',
     ... }
     >>> mid_distrib = {'bisphenol_S': 0.4, 'bisphenol_A': 0.6}
-    >>> univprim = build_polymer_system(
+    >>> univprim = build_SAAMR_polymer_system(
     ...     rep_unit_smiles, mid_distrib,
     ...     n_chains=10, chain_len_min=5, chain_len_max=10,
     ... )
@@ -220,7 +220,7 @@ def build_polymer_system(
 
     # Build lexicon of repeat units
     logger.info(f"Building lexicon with {len(rep_unit_smiles)} repeat unit types")
-    lexicon = build_lexicon(rep_unit_smiles, axis=axis)
+    lexicon = build_SAAMR_lexicon(rep_unit_smiles, axis=axis)
 
     # Validate that required units are present
     for required in [head_name, tail_name] + list(mid_distrib.keys()):
@@ -288,7 +288,7 @@ def build_polymer_system(
 """
 NOTE: This concept is confusing! At a high level, the Factory returns
 a function that will have custom arguments passed into it. Each time
-we call the Factory function, it instantiates a new call to build_polymer_system()
+we call the Factory function, it instantiates a new call to build_SAAMR_polymer_system()
 with the parameters we provide when we invoke the Factory.
 
 Factory Fixture Usage Examples
@@ -410,7 +410,7 @@ def polyethylene_factory(
                 "Must provide either chain_len or both chain_len_min and chain_len_max"
             )
 
-        return build_polymer_system(
+        return build_SAAMR_polymer_system(
             polyethylene_smiles,
             mid_distrib={"ethane": 1.0},
             n_chains=n_chains,
@@ -473,7 +473,7 @@ def PES_factory(polyethersulfone_smiles) -> Callable[..., Primitive]:
         # Calculate BPA/BPS distribution
         mid_distrib = {"bisphenol_S": bps_fraction, "bisphenol_A": 1.0 - bps_fraction}
 
-        return build_polymer_system(
+        return build_SAAMR_polymer_system(
             polyethersulfone_smiles,
             mid_distrib,
             n_chains=n_chains,
