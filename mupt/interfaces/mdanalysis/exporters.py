@@ -160,6 +160,16 @@ def primitive_to_mdanalysis(
     - Atom names are set to element symbols (atom-type agnostic approach)
     - Coordinates are extracted from atom centroids, defaulting to [0,0,0]
 
+    .. warning::
+
+       When ``strategy`` is ``None`` (the default), this function calls
+       :func:`assign_SAAMR_roles` on ``univprim`` **in place**, mutating
+       the caller's Primitive tree by setting ``.role`` attributes on
+       every node.  This mutation is idempotent — calling the function
+       multiple times produces the same result — but callers who need
+       an unmodified tree should either pass an explicit ``strategy``
+       with pre-assigned roles, or export from a copy of the tree.
+
     Examples
     --------
     >>> universe = primitive_to_mdanalysis(my_univprim, resname_map)
