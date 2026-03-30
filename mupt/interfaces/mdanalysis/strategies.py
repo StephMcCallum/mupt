@@ -279,7 +279,13 @@ class AllAtomExportStrategy(MDAExportStrategy):
                 continue
 
             for conn_ref_pair in node.internal_connections:
-                conn_ref1, conn_ref2 = tuple(conn_ref_pair)
+                # Canonicalize pair order for deterministic bond-order inference;
+                # frozenset iteration order is arbitrary, so we sort by handles
+                ref_list = sorted(
+                    conn_ref_pair,
+                    key=lambda cr: (cr.primitive_handle, cr.connector_handle),
+                )
+                conn_ref1, conn_ref2 = ref_list
                 atom1 = _resolve_to_atom(node, conn_ref1)
                 atom2 = _resolve_to_atom(node, conn_ref2)
 
