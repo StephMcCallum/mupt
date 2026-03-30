@@ -5,3 +5,9 @@ __email__ = 'jola3134@colorado.edu'
 
 
 from .exporters import primitive_to_mdanalysis
+from .strategies import (
+    MDAExportStrategy,
+    MDATopologyData,
+    AllAtomExportStrategy,
+    CoarseGrainedExportStrategy,
+)
