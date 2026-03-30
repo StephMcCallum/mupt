@@ -334,6 +334,48 @@ def test_strategy_rejects_unroled_leaves():
         strategy.validate(universe)
 
 
+def test_strategy_rejects_nested_segments():
+    """
+    AllAtomExportStrategy.validate() must reject a hierarchy where
+    a SEGMENT contains a descendant SEGMENT, which would cause
+    double-counting during collect_topology().
+    """
+    universe = Primitive(label="universe", role=PrimitiveRole.UNIVERSE)
+    outer_seg = Primitive(label="outer_seg", role=PrimitiveRole.SEGMENT)
+    inner_seg = Primitive(label="inner_seg", role=PrimitiveRole.SEGMENT)
+    residue = Primitive(label="res", role=PrimitiveRole.RESIDUE)
+    atom = Primitive(label="He", element=ELEMENTS[2], role=PrimitiveRole.PARTICLE)
+    universe.attach_child(outer_seg)
+    outer_seg.attach_child(inner_seg)
+    inner_seg.attach_child(residue)
+    residue.attach_child(atom)
+
+    strategy = AllAtomExportStrategy()
+    with pytest.raises(ValueError, match="nested SEGMENT"):
+        strategy.validate(universe)
+
+
+def test_strategy_rejects_nested_residues():
+    """
+    AllAtomExportStrategy.validate() must reject a hierarchy where
+    a RESIDUE contains a descendant RESIDUE, which would cause
+    double-counting of atoms during collect_topology().
+    """
+    universe = Primitive(label="universe", role=PrimitiveRole.UNIVERSE)
+    segment = Primitive(label="seg", role=PrimitiveRole.SEGMENT)
+    outer_res = Primitive(label="outer_res", role=PrimitiveRole.RESIDUE)
+    inner_res = Primitive(label="inner_res", role=PrimitiveRole.RESIDUE)
+    atom = Primitive(label="He", element=ELEMENTS[2], role=PrimitiveRole.PARTICLE)
+    universe.attach_child(segment)
+    segment.attach_child(outer_res)
+    outer_res.attach_child(inner_res)
+    inner_res.attach_child(atom)
+
+    strategy = AllAtomExportStrategy()
+    with pytest.raises(ValueError, match="nested RESIDUE"):
+        strategy.validate(universe)
+
+
 @pytest.mark.parametrize(
     "primitive_fixture,resname_fixture,expected_segments",
     [
