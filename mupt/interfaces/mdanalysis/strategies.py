@@ -162,7 +162,14 @@ class MDAExportStrategy(ABC):
 
 
 class AllAtomExportStrategy(MDAExportStrategy):
-    """All-atom export strategy based on role-aware hierarchy traversal."""
+    """All-atom export strategy based on role-aware hierarchy traversal.
+
+    Although only four canonical SAAMR roles are recognized (UNIVERSE,
+    SEGMENT, RESIDUE, PARTICLE), this strategy supports trees of arbitrary
+    depth. Intermediate nodes between role-tagged levels (e.g., a "domain"
+    grouping between UNIVERSE and SEGMENT) are traversed transparently via
+    ``PreOrderIter`` and carry ``PrimitiveRole.UNASSIGNED``.
+    """
 
     def __init__(
         self,

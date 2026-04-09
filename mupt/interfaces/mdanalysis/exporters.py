@@ -160,6 +160,10 @@ def primitive_to_mdanalysis(
     - Bond indices are 0-based (array indices)
     - Atom names are set to element symbols (atom-type agnostic approach)
     - Coordinates are extracted from atom centroids, defaulting to [0,0,0]
+    - The four SAAMR roles (UNIVERSE, SEGMENT, RESIDUE, PARTICLE) are the
+      only roles recognized for MDAnalysis export, but the tree may contain
+      intermediate nodes at any depth between these roles. Such nodes carry
+      ``PrimitiveRole.UNASSIGNED`` and are traversed transparently.
 
     .. warning::
 
