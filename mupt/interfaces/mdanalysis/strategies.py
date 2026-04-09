@@ -5,7 +5,6 @@ __email__ = "jola3134@colorado.edu"
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-import logging
 from collections.abc import Hashable
 from typing import Optional
 
@@ -15,9 +14,6 @@ from ...chemistry.core import BOND_ORDER
 from ...mupr.embedding import ConnectorReference
 from ...mupr.primitives import Primitive
 from ...mupr.roles import PrimitiveRole
-
-LOGGER = logging.getLogger(__name__)
-
 
 def _pdb_resname(label: Hashable, resname_map: dict[str, str]) -> str:
     """Map a residue label to a PDB-compliant 3-character residue name.
@@ -112,32 +108,19 @@ def _bond_order_from_conn_ref(parent: Primitive, conn_ref: ConnectorReference) -
     Returns
     -------
     float
-        Numeric bond order (defaults to 1.0 if the connector or its
-        bondtype cannot be resolved).
-    """
-    child = parent.fetch_child(conn_ref.primitive_handle)
-    connector = child.connectors.get(conn_ref.connector_handle)
-    if connector is None:
-        LOGGER.warning(
-            "Connector %s not found on child %s of parent %s; "
-            "defaulting bond order to 1.0",
-            conn_ref.connector_handle,
-            conn_ref.primitive_handle,
-            parent.label,
-        )
-        return 1.0
+        Numeric bond order derived from the connector's bondtype.
 
-    bondtype: Optional[str] = getattr(connector, "bondtype", None)
-    order = BOND_ORDER.get(bondtype, 1.0)
-    if bondtype is not None and bondtype not in BOND_ORDER:
-        LOGGER.debug(
-            "Unmapped bondtype %r on connector %s of child %s; "
-            "defaulting bond order to 1.0",
-            bondtype,
-            conn_ref.connector_handle,
-            conn_ref.primitive_handle,
-        )
-    return order
+    Raises
+    ------
+    MissingConnectorError
+        If the referenced connector does not exist on the child primitive.
+        This indicates a corrupted primitive tree (connectors are always
+        present for valid internal connections).
+    KeyError
+        If the connector's bondtype is not in the BOND_ORDER lookup table.
+    """
+    connector = parent.fetch_connector_on_child(conn_ref)
+    return BOND_ORDER[connector.bondtype]
 
 
 @dataclass
