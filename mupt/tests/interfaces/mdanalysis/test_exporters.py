@@ -182,6 +182,8 @@ def non_SAAMR_hierarchy_non_atom_leaf() -> Primitive:
 def SAAMR_hierarchy_helium() -> Primitive:
     """Minimal valid SAAMR structure for testing resname_map validation.
     Hierarchy: Universe -> Molecule -> Repeat-Unit ('unit') -> He atom."""
+    from mupt.mupr.roles import assign_SAAMR_roles
+
     universe = Primitive(label="universe")
     molecule = Primitive(label="mol")
     repeat_unit = Primitive(label="unit")
@@ -189,6 +191,7 @@ def SAAMR_hierarchy_helium() -> Primitive:
     universe.attach_child(molecule)
     molecule.attach_child(repeat_unit)
     repeat_unit.attach_child(atom)
+    assign_SAAMR_roles(universe)
     return universe
 
 
@@ -209,7 +212,7 @@ def test_mda_export_reject_empty_tree():
     assert not is_SAAMR_compliant(root_only), (
         "Root-only Primitive should not be SAAMR-compliant"
     )
-    with pytest.raises(ValueError, match="not SAAMR-compliant"):
+    with pytest.raises(ValueError, match="UNIVERSE"):
         primitive_to_mdanalysis(root_only, resname_map={})
 
 
@@ -223,12 +226,13 @@ def test_mda_export_reject_empty_tree():
 )
 def test_mda_export_reject_non_SAAMR(primitive_fixture, resname_map, request):
     """
-    Check that non-SAAMR-compliant Primitives raise ValueError when attempting export to MDAnalysis.
+    Check that Primitives without role assignments raise ValueError
+    when attempting export to MDAnalysis.
 
-    The exporter requires Primitives organized as
-    Universe -> Molecules -> Repeat-Units -> Atoms (depth=3 for all leaves,
-    all leaves must have an element attribute). 
-    Violations of either condition must raise ValueError to give user clear feedback
+    The AllAtomExportStrategy requires Primitives to have canonical
+    SAAMR roles (UNIVERSE, SEGMENT, RESIDUE, PARTICLE) assigned.
+    Primitives without roles default to PrimitiveRole.UNASSIGNED and
+    are rejected by the strategy's validate() method.
     """
     univprim = request.getfixturevalue(primitive_fixture)
     with pytest.raises(ValueError):
@@ -274,15 +278,15 @@ def test_invalid_resname_map_raises_value_error(primitive_fixture, resname_map, 
 def test_explicit_strategy_produces_same_result(primitive_fixture, resname_fixture, request):
     """
     Verify that passing AllAtomExportStrategy explicitly produces the
-    same atom/bond counts as the default (auto-assign) path.
+    same atom/bond counts as the default strategy path.
     """
     univprim = request.getfixturevalue(primitive_fixture)
     resname_map = request.getfixturevalue(resname_fixture)
 
-    # Default path (auto-assigns roles internally)
+    # Default path (uses AllAtomExportStrategy)
     mda_default = primitive_to_mdanalysis(univprim, resname_map=resname_map)
 
-    # Explicit strategy path (roles already assigned by fixture)
+    # Explicit strategy path
     strategy = AllAtomExportStrategy()
     mda_explicit = primitive_to_mdanalysis(univprim, resname_map=resname_map, strategy=strategy)
 

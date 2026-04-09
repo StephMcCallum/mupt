@@ -22,8 +22,6 @@ from typing import Optional
 from collections import Counter
 
 from ...mupr.primitives import Primitive
-from ...mupr.properties import is_SAAMR_compliant
-from ...mupr.roles import assign_SAAMR_roles
 
 from .strategies import MDAExportStrategy, AllAtomExportStrategy, MDATopologyData
 
@@ -120,9 +118,8 @@ def primitive_to_mdanalysis(
     Convert a MuPT Primitive hierarchy to an MDAnalysis Universe.
 
     This function delegates topology collection to a pluggable
-    :class:`MDAExportStrategy`.  When no strategy is provided, the
-    function checks for SAAMR compliance, auto-assigns roles via
-    :func:`assign_SAAMR_roles`, and uses :class:`AllAtomExportStrategy`.
+    :class:`MDAExportStrategy`. When no strategy is provided,
+    :class:`AllAtomExportStrategy` is used.
 
     Parameters
     ----------
@@ -131,9 +128,8 @@ def primitive_to_mdanalysis(
     resname_map : dict[str, str]
         Mapping from residue labels to PDB residue names (3-letter codes).
     strategy : MDAExportStrategy, optional
-        Export strategy to use.  If ``None`` (default), a SAAMR-compliant
-        hierarchy is assumed and :class:`AllAtomExportStrategy` is used
-        after auto-assigning roles.
+        Export strategy to use. If ``None`` (default),
+        :class:`AllAtomExportStrategy` is used.
 
     Returns
     -------
@@ -149,9 +145,9 @@ def primitive_to_mdanalysis(
     Raises
     ------
     ValueError
-        If ``strategy`` is ``None`` and the hierarchy is not SAAMR-compliant.
-    ValueError
-        If role validation fails for the chosen strategy.
+        If the Primitive hierarchy lacks required role assignments.
+        Use :func:`~mupt.mupr.roles.assign_SAAMR_roles` for standard
+        hierarchies or assign roles manually.
 
     Notes
     -----
@@ -166,16 +162,6 @@ def primitive_to_mdanalysis(
       intermediate nodes at any depth between these roles. Such nodes carry
       ``PrimitiveRole.UNASSIGNED`` and are traversed transparently.
 
-    .. warning::
-
-       When ``strategy`` is ``None`` (the default), this function calls
-       :func:`assign_SAAMR_roles` on ``univprim`` **in place**, mutating
-       the caller's Primitive tree by setting ``.role`` attributes on
-       every node.  This mutation is idempotent — calling the function
-       multiple times produces the same result — but callers who need
-       an unmodified tree should either pass an explicit ``strategy``
-       with pre-assigned roles, or export from a copy of the tree.
-
     Examples
     --------
     >>> universe = primitive_to_mdanalysis(my_univprim, resname_map)
@@ -189,17 +175,6 @@ def primitive_to_mdanalysis(
     >>> universe = primitive_to_mdanalysis(my_univprim, resname_map, strategy=strategy)
     """
     if strategy is None:
-        # Backward-compatible path: require SAAMR, auto-assign roles
-        if not is_SAAMR_compliant(univprim):
-            raise ValueError(
-                "Primitive is not SAAMR-compliant. Expected a hierarchy ordered as "
-                "universe -> chains -> residues -> atoms. Ensure that the input "
-                "Primitive is constructed or reordered to follow this hierarchy "
-                "before calling primitive_to_mdanalysis().\n"
-                "Alternatively, call assign_SAAMR_roles() to tag roles, or assign "
-                "roles manually and pass an explicit strategy."
-            )
-        assign_SAAMR_roles(univprim)
         strategy = AllAtomExportStrategy()
 
     # Delegate topology collection to the strategy
