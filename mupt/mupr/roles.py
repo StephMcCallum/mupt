@@ -11,6 +11,10 @@ __author__ = "Joseph R. Laforet Jr."
 __email__ = "jola3134@colorado.edu"
 
 from enum import Enum
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .primitives import Primitive
 
 
 class PrimitiveRole(Enum):
@@ -41,3 +45,34 @@ class PrimitiveRole(Enum):
     SEGMENT  = "segment"
     RESIDUE  = "residue"
     PARTICLE = "particle"
+
+
+def assign_SAAMR_roles(prim: 'Primitive') -> None:
+    """Assign canonical export roles for a SAAMR-compliant hierarchy.
+
+    Parameters
+    ----------
+    prim : Primitive
+        Root Primitive of a hierarchy expected to follow SAAMR layout:
+        universe -> segment -> residue -> particle.
+
+    Raises
+    ------
+    ValueError
+        If ``prim`` is not SAAMR-compliant.
+    """
+    from .properties import is_SAAMR_compliant
+
+    if not is_SAAMR_compliant(prim):
+        raise ValueError('Cannot assign SAAMR roles: hierarchy is not SAAMR-compliant')
+
+    prim.role = PrimitiveRole.UNIVERSE
+
+    for segment in prim.children:
+        segment.role = PrimitiveRole.SEGMENT
+
+        for residue in segment.children:
+            residue.role = PrimitiveRole.RESIDUE
+
+            for particle in residue.children:
+                particle.role = PrimitiveRole.PARTICLE

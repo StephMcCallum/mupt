@@ -21,7 +21,7 @@ from ..geometry.transforms.rigid import rigid_vector_coalignment
 from ..interfaces.smiles import primitive_from_smiles
 from ..interfaces.rdkit import suppress_rdkit_logs
 from ..builders.random_walk import AngleConstrainedRandomWalk
-from ..mupr.properties import assign_SAAMR_roles
+from ..mupr.roles import assign_SAAMR_roles
 
 
 logger = logging.getLogger(__name__)

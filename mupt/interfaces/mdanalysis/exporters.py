@@ -22,7 +22,8 @@ from typing import Optional
 from collections import Counter
 
 from ...mupr.primitives import Primitive
-from ...mupr.properties import is_SAAMR_compliant, assign_SAAMR_roles
+from ...mupr.properties import is_SAAMR_compliant
+from ...mupr.roles import assign_SAAMR_roles
 
 from .strategies import MDAExportStrategy, AllAtomExportStrategy, MDATopologyData
 
