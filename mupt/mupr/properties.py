@@ -11,16 +11,18 @@ from .primitives import Primitive
 
 def is_SAAMR_compliant(prim: Primitive) -> bool:
    """
-   Check whether a Primitive hierarchy is organized
-   as universe -> molecule -> repeat-unit -> atom
-   
+   Check whether a Primitive hierarchy is a strict SAAMR tree:
+   exactly universe -> molecule -> repeat-unit -> atom (depth 3).
+
    SAAMR = Standard All-Atom Molecular Representation
 
-   A root-only or atom-less tree returns False because a valid SAAMR
-   hierarchy requires all leaves to be atoms at depth 3.  Note that
-   ``prim.leaves`` always includes at least ``prim`` itself (anytree
-   treats childless nodes as their own leaf), so the ``all()`` predicate
-   is never evaluated over an empty iterable.
+   This checks for *strict* SAAMR compliance (all leaves are atoms at
+   depth exactly 3).  Note that MDAnalysis export does **not** require
+   strict SAAMR compliance — any tree with the four canonical SAAMR
+   roles (UNIVERSE, SEGMENT, RESIDUE, PARTICLE) assigned can be exported,
+   regardless of depth.  Use :func:`~mupt.mupr.roles.assign_SAAMR_roles`
+   to tag a strict SAAMR tree, or assign roles manually for non-strict
+   hierarchies.
    """
 
    return all(leaf.is_atom and (leaf.depth == 3) for leaf in prim.leaves)
