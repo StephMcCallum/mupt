@@ -3,4 +3,4 @@
 __author__ = 'Timotej Bernat, Joseph R. Laforet Jr.'
 __email__ = 'timotej.bernat@colorado.edu, jola3134@colorado.edu'
 
-from .roles import PrimitiveRole, assign_SAAMR_roles
+from .roles import PrimitiveRole, assign_SAAMR_roles, has_SAAMR_roles

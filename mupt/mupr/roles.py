@@ -47,6 +47,40 @@ class PrimitiveRole(Enum):
     PARTICLE = "particle"
 
 
+def has_SAAMR_roles(prim: 'Primitive') -> bool:
+    """Check whether a Primitive hierarchy has all four SAAMR roles assigned.
+
+    This checks for role *presence* in the tree, not structural depth.
+    A tree passes if at least one node carries each of the four roles:
+    UNIVERSE, SEGMENT, RESIDUE, and PARTICLE.
+
+    Parameters
+    ----------
+    prim : Primitive
+        Root of the hierarchy to check.
+
+    Returns
+    -------
+    bool
+        ``True`` if all four SAAMR roles are present in the tree.
+
+    See Also
+    --------
+    has_strict_SAAMR_depth : Checks for strict depth-3 SAAMR structure.
+    assign_SAAMR_roles : Assigns roles to a strict SAAMR hierarchy.
+    """
+    from anytree import PreOrderIter
+
+    required = {
+        PrimitiveRole.UNIVERSE,
+        PrimitiveRole.SEGMENT,
+        PrimitiveRole.RESIDUE,
+        PrimitiveRole.PARTICLE,
+    }
+    present = {node.role for node in PreOrderIter(prim)}
+    return required.issubset(present)
+
+
 def assign_SAAMR_roles(prim: 'Primitive') -> None:
     """Assign canonical export roles for a strict depth-3 SAAMR hierarchy.
 
