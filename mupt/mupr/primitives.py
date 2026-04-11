@@ -1,7 +1,7 @@
 '''Fundamental data structures for multiscale molecular representation'''
 
-__author__ = 'Timotej Bernat, Joseph R. Laforet Jr.'
-__email__ = 'timotej.bernat@colorado.edu, jola3134@colorado.edu'
+__author__ = 'Timotej Bernat'
+__email__ = 'timotej.bernat@colorado.edu'
 
 import logging
 LOGGER = logging.getLogger(__name__)
@@ -110,8 +110,8 @@ class Primitive(NodeMixin, RigidlyTransformable):
         connectors : Optional[Iterable[Connector]]=None,
         children : Optional[Iterable['Primitive']]=None,
         label : Optional[PrimitiveLabel]=None,
+        role : PrimitiveRole=PrimitiveRole.UNASSIGNED,
         metadata : Optional[dict[Hashable, Any]]=None,
-        role : Optional[PrimitiveRole]=None,
     ) -> None:
         # essential components
         ## external bounded shape
@@ -141,9 +141,8 @@ class Primitive(NodeMixin, RigidlyTransformable):
         
         # additional descriptors
         self.label = type(self).DEFAULT_LABEL if (label is None) else label
+        self.role = role
         self.metadata = metadata or dict()
-        if role is not None:
-            self.metadata['role'] = role
         
         
     # Chemical atom and bond properties
