@@ -1,0 +1,15 @@
+{
+  "name": "CoulombPotential",
+  "expression": "(C * q_i * q_j)/(epsilon*r)",
+  "independent_variables": {
+    "r",
+    "q_i",
+    "q_j"
+  }
+  "expected_parameters_dimensions": {
+    "C": "None",
+    "q_i": "coulumb",
+    "epsilon": "energy",
+    "q_j": "coulomb"
+  }
+}
